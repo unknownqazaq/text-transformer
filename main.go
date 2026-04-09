@@ -2,35 +2,34 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"text-transformer/internal"
 )
 
 func main() {
-	// os.Args хранит аргументы командной строки
+
 	inputFile, outputFile, err := validateArgs(os.Args)
 	if err != nil {
-		fmt.Println("Ошибка:", err)
-		os.Exit(1) // Завершаем программу с кодом ошибки
+		log.Println("Ошибка:", err)
+		os.Exit(1)
 	}
 
 	content, err := internal.ReadTextFile(inputFile)
 	if err != nil {
-		fmt.Println("Ошибка при чтение файла", err)
+		log.Println("Ошибка при чтение файла", err)
 		os.Exit(1)
 	}
 	processedText := internal.Process(content)
 
 	err = internal.WriteTextFile(outputFile, processedText)
 	if err != nil {
-		fmt.Println("Ошибка при записи файла:", err)
+		log.Println("Ошибка при записи файла:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Шаг 3: Файл успешно прочитан и записан!")
-
-	fmt.Println("Входной файл:", inputFile)
-	fmt.Println("Выходной файл:", outputFile)
+	log.Println("Входной файл:", inputFile)
+	log.Println("Выходной файл:", outputFile)
 }
 
 // validateArgs проверяет правильность переданных аргументов

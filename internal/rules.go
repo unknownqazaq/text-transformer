@@ -17,7 +17,7 @@ func applyConversion(words []string, base int) {
 
 	val, err := strconv.ParseInt(words[idx], base, 64)
 	if err == nil {
-		words[idx] = fmt.Sprintf("%d", val) // Без указателей всё выглядит просто
+		words[idx] = fmt.Sprintf("%d", val)
 	}
 }
 
@@ -33,7 +33,7 @@ func applyCase(words []string, n int, transform func(string) string) {
 	}
 
 	for i := length - n; i < length; i++ {
-		words[i] = transform(words[i]) // Просто берем слово, меняем и кладем обратно
+		words[i] = transform(words[i])
 	}
 }
 
