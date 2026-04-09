@@ -2,38 +2,55 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
+	"text-transformer/internal"
 )
 
 func main() {
-	createFile, err := os.Create("output.txt")
-
+	// os.Args хранит аргументы командной строки
+	inputFile, outputFile, err := validateArgs(os.Args)
 	if err != nil {
-		fmt.Println("Unable to creat file:", err)
-		os.Exit(1)
-
+		fmt.Println("Ошибка:", err)
+		os.Exit(1) // Завершаем программу с кодом ошибки
 	}
 
-	file, err := os.Open("sample.txt")
+	content, err := internal.ReadTextFile(inputFile)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Ошибка при чтение файла", err)
 		os.Exit(1)
 	}
-	defer file.Close()
-	data := make([]byte, 64)
+	processedText := internal.Process(content)
 
-	for {
-		n, err := file.Read(data)
-		if err == io.EOF {
-			break
-		}
-		fmt.Print(string(data[:n]))
-		createFile.WriteString(string(data[:n]))
+	err = internal.WriteTextFile(outputFile, processedText)
+	if err != nil {
+		fmt.Println("Ошибка при записи файла:", err)
+		os.Exit(1)
 	}
 
-	defer createFile.Close()
+	fmt.Println("Шаг 3: Файл успешно прочитан и записан!")
 
-	fmt.Println("Done")
+	fmt.Println("Входной файл:", inputFile)
+	fmt.Println("Выходной файл:", outputFile)
+}
 
+// validateArgs проверяет правильность переданных аргументов
+func validateArgs(args []string) (string, string, error) {
+	// args[0] - это имя самой программы, args[1] и args[2] - файлы
+	if len(args) != 3 {
+		return "", "", fmt.Errorf("использование: go run . input.txt output.txt")
+	}
+
+	inputFile := args[1]
+	outputFile := args[2]
+
+	// Проверяем, существует ли входной файл
+	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
+		return "", "", fmt.Errorf("входной файл не существует: %s", inputFile)
+	}
+
+	if outputFile == "" {
+		return "", "", fmt.Errorf("имя выходного файла не может быть пустым")
+	}
+
+	return inputFile, outputFile, nil
 }
