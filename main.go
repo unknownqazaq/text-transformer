@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"text-transformer/internal"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 
 	inputFile, outputFile, err := validateArgs(os.Args)
 	if err != nil {
@@ -20,7 +23,10 @@ func main() {
 		log.Println("Ошибка при чтение файла", err)
 		os.Exit(1)
 	}
+	log.Printf("Файл %s прочитан: символов=%d слов=%d", inputFile, len(content), len(strings.Fields(content)))
+
 	processedText := internal.Process(content)
+	log.Printf("Преобразования завершены: символов=%d слов=%d", len(processedText), len(strings.Fields(processedText)))
 
 	err = internal.WriteTextFile(outputFile, processedText)
 	if err != nil {
@@ -30,6 +36,7 @@ func main() {
 
 	log.Println("Входной файл:", inputFile)
 	log.Println("Выходной файл:", outputFile)
+	log.Printf("Обработка завершена успешно за %s", time.Since(start).Round(time.Millisecond))
 }
 
 // validateArgs проверяет правильность переданных аргументов
